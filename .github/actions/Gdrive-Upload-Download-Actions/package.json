@@ -1,0 +1,14 @@
+{
+    "name": "google-drive-action",
+    "version": "1.0.0",
+    "description": "A GitHub Action for interacting with Google Drive",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js"
+    },
+    "dependencies": {
+      "googleapis": "^106.0.0",
+      "readline": "^1.0.0"
+    }
+  }
+  
