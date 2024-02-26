@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run action
+        uses: ./ # Use the action in the current repository
+        with:
+          action: 'download' 
+          filename: "RoboHelpTool.2023.0.1.zip"
+          folder_id: ${{ secrets.RESOURCE_ID }} # If available
+          drive_id: ${{ secrets.FILE_ID }} # If available
+          credentials_file: ${{ secrets.CREDENTIALS_FILE }}
+          mime_type: 'application/zip' # Adjust MIME type as needed
+          overwrite: 'false' # Optional for upload actiondownload action
+          encoded: "true"
