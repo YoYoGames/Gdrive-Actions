@@ -16,42 +16,28 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
-    # Ensure that the credentials file path is provided
-    if credentials_file is None:
-        error("Credentials file path is not provided.")
-        return
-
-    # Read the credentials file path from the text file
     try:
+        # Ensure that the credentials file path is provided
+        if credentials_file is None:
+            raise ValueError("Credentials file path is not provided.")
+
+        # Read the credentials file path from the text file
         with open(credentials_file, 'r') as f:
             credentials_file_path = f.read().strip()
-    except Exception as e:
-        error(f"Error reading credentials file path: {e}")
-        return
 
-    # Check if the credentials file exists
-    if not os.path.isfile(credentials_file_path):
-        error(f"Credentials file '{credentials_file_path}' not found.")
-        return
+        # Check if the credentials file exists
+        if not os.path.isfile(credentials_file_path):
+            raise FileNotFoundError(f"Credentials file '{credentials_file_path}' not found.")
 
-    # Fetching a JWT config with credentials and the right scope
-    try:
+        # Fetching a JWT config with credentials and the right scope
         with open(credentials_file_path, 'r') as file:
             credentials = json.load(file)
             creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
-    except Exception as e:
-        error(f"Fetching JWT credentials failed with error: {e}")
-        return
 
-    # Instantiate a new Drive service
-    try:
+        # Instantiate a new Drive service
         service = build('drive', 'v3', credentials=creds)
-    except Exception as e:
-        error(f"Instantiating Google Drive service failed with error: {e}")
-        return
 
-    if action == 'upload':
-        try:
+        if action == 'upload':
             file_metadata = {'name': name, 'parents': [drive_id]}
             media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
@@ -66,11 +52,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
             # Log the upload completion
             debug(f"Upload completed. File ID: {response.get('id')}")
 
-        except Exception as e:
-            error(f"An unexpected error occurred: {e}")
-             
-    elif action == 'download':
-        try:
+        elif action == 'download':
             request = service.files().get_media(fileId=folder_id)
             file = io.BytesIO()
             downloader = MediaIoBaseDownload(file, request)
@@ -85,8 +67,12 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
                 f.write(file.getvalue())
             print(f'Download completed. File saved to {download_path}')
 
-        except HttpError as error:
-            print(f'An error occurred: {error}')
+    except OSError as e:
+        error(f"Error opening credentials file: {e}")
+    except (ValueError, FileNotFoundError) as e:
+        error(f"Error: {e}")
+    except Exception as e:
+        error(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     # Configure logging to output debug messages
@@ -108,11 +94,6 @@ if __name__ == "__main__":
     # Perform type conversion where necessary
     encoded = encoded.lower() == 'true' if encoded else True  # Convert to boolean
     overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
-
-    # Ensure required variables are present
-    if None in (action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
-        print("Error: One or more required environment variables are missing.")
-        sys.exit(1)
 
     # Call the main function
     main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite)
