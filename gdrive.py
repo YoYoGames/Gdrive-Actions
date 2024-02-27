@@ -15,77 +15,65 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file, encoded):
-    if not os.path.isfile(credentials_file):
-        error(f"Credentials file '{credentials_file}' not found.")
-        return
-
-    # Read the base64-encoded credentials from the file if encoded is 'true'
-    if encoded.lower() == 'true':
-        try:
-            with open(credentials_file, 'r') as file:
-                credentials_base64 = file.read()
-                credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
-                credentials = json.loads(credentials_json)
-        except Exception as e:
-            error(f"Error decoding/parsing credentials: {e}")
-            return
-    else:
-        error("Credentials are not encoded in base64.")
-        return
-
-    # Fetching a JWT config with credentials and the right scope
+def main(action, filename, name, drive_id, folder_id, credentials_file):
     try:
+        # Retrieve encoded credentials content from secret
+        encoded_credentials_content = os.getenv(credentials_file)
+
+        if encoded_credentials_content is None:
+            raise ValueError("Encoded credentials content not found in secrets.")
+
+        # Decode the credentials content
+        credentials_base64 = encoded_credentials_content.encode('utf-8')
+        credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+        credentials = json.loads(credentials_json)
+
+        # Fetching a JWT config with credentials and the right scope
         creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
-    except Exception as e:
-        error(f"Fetching JWT credentials failed with error: {e}")
-        return
 
-    # Instantiate a new Drive service
-    try:
+        # Instantiate a new Drive service
         service = build('drive', 'v3', credentials=creds)
-    except Exception as e:
-        error(f"Instantiating Google Drive service failed with error: {e}")
-        return
 
-
-    if action == 'upload':
-        try:
-            file_metadata = {'name': name, 'parents': [drive_id]}
-            media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
+        if action == 'upload':
+            try:
+                file_metadata = {'name': name, 'parents': [drive_id]}
+                media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
             # Perform the upload
-            response = service.files().create(
-                body=file_metadata,
-                media_body=media,
-                supportsAllDrives=True,
-                fields='id'
-            ).execute()
+                response = service.files().create(
+                    body=file_metadata,
+                    media_body=media,
+                    supportsAllDrives=True,
+                    fields='id'
+                ).execute()
 
             # Log the upload completion
-            debug(f"Upload completed. File ID: {response.get('id')}")
+                debug(f"Upload completed. File ID: {response.get('id')}")
 
-        except Exception as e:
-            error(f"An unexpected error occurred: {e}")
+            except Exception as e:
+                error(f"An unexpected error occurred: {e}")
              
-    elif action == 'download':
-        try:
-            request = service.files().get_media(fileId=folder_id)
-            file = io.BytesIO()
-            downloader = MediaIoBaseDownload(file, request)
-            done = False
-            while done is False:
-                status, done = downloader.next_chunk()
-                print(f'Download {int(status.progress() * 100)}.')
+        elif action == 'download':
+            try:
+                request = service.files().get_media(fileId=folder_id)
+                file = io.BytesIO()
+                downloader = MediaIoBaseDownload(file, request)
+                done = False
+                while done is False:
+                    status, done = downloader.next_chunk()
+                    print(f'Download {int(status.progress() * 100)}.')
 
             # Save the downloaded file to a local file
-            download_path = filename  # Specify the path where you want to save the file
-            with open(download_path, 'wb') as f:
-                f.write(file.getvalue())
-            print(f'Download completed. File saved to {download_path}')
+                download_path = filename  # Specify the path where you want to save the file
+                with open(download_path, 'wb') as f:
+                    f.write(file.getvalue())
+                print(f'Download completed. File saved to {download_path}')
 
-        except HttpError as error:
-            print(f'An error occurred: {error}')
+            except HttpError as error:
+                print(f'An error occurred: {error}')
+        
+    except Exception as e:
+        error(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     # Configure logging to output debug messages
