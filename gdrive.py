@@ -17,7 +17,7 @@ def debug(message):
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
         # Retrieve encoded credentials content from secret
-        encoded_credentials_content = os.environ[credentials_file]
+        encoded_credentials_content = os.environ['credentials_file']
 
         # if encoded_credentials_content is None:
         #     raise ValueError("Encoded credentials content not found in secrets.")
