@@ -89,7 +89,7 @@ if __name__ == "__main__":
     drive_id = os.getenv('INPUT_DRIVE_ID')
     folder_id = os.getenv('INPUT_FOLDER_ID')
     credentials_file = os.getenv('INPUT_CREDENTIALS_FILE')
-    encoded = os.getenv('INPUT_ENCODED')
+    # encoded = os.getenv('INPUT_ENCODED')
     overwrite = os.getenv('INPUT_OVERWRITE')
 
     # Perform type conversion where necessary
@@ -97,4 +97,4 @@ if __name__ == "__main__":
     overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
 
     # Call the main function
-    main(action, filename, name, drive_id, folder_id, credentials_file, encoded)
+    main(action, filename, name, drive_id, folder_id, credentials_file)

@@ -24,10 +24,10 @@ inputs:
     description: 'Boolean indicating whether to overwrite existing files (for upload action)'
     required: false
     default: 'false'
-  encoded:
-    description: 'Boolean indicating whether the filename is encoded (for download action)'
-    required: true
-    default: 'true'
+  # encoded:
+  #   description: 'Boolean indicating whether the filename is encoded (for download action)'
+  #   required: true
+  #   default: 'true'
 outputs:
   download_path:
     description: 'Path to the downloaded file (for download action)'
