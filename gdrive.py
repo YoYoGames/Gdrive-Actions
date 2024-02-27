@@ -15,7 +15,7 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file):
+def main(action, filename, name, drive_id, folder_id, credentials_file, encoded):
     if not os.path.isfile(credentials_file):
         error(f"Credentials file '{credentials_file}' not found.")
         return
