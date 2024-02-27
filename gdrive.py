@@ -15,7 +15,7 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file):
+def main(action, filename, name, drive_id, folder_id, credentials_file, encoded):
     try:
         # Retrieve encoded credentials content from secret
         encoded_credentials_content = os.getenv(credentials_file)
@@ -97,4 +97,4 @@ if __name__ == "__main__":
     overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
 
     # Call the main function
-    main(action, filename, name, drive_id, folder_id, credentials_file)
+    main(action, filename, name, drive_id, folder_id, credentials_file, encoded)
