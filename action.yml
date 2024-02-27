@@ -20,10 +20,10 @@ inputs:
   credentials_file:
     description: 'Path to the credentials file (Base64 encoded Google service account credentials)'
     required: true
-  overwrite:
-    description: 'Boolean indicating whether to overwrite existing files (for upload action)'
-    required: false
-    default: 'false'
+  # overwrite:
+  #   description: 'Boolean indicating whether to overwrite existing files (for upload action)'
+  #   required: false
+  #   default: 'false'
   # encoded:
   #   description: 'Boolean indicating whether the filename is encoded (for download action)'
   #   required: true
