@@ -16,21 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      
       - name: Run action
         uses: YoYoGames/Gdrive-Actions@main # Use the action in the current repository
         with:
           action: 'upload' 
-          filename: "RoboHelpTool.2023.0.1.zip"
+          filename: 'RoboHelpTool-2024.2.0.zip'
           folder_id: ${{ secrets.RESOURCE_ID }} # If available
-          drive_id: ${{ secrets.FILE_ID }} # If available
+          drive_id: '${{ secrets.FILE_ID }}' # If available
           credentials_file: ${{ secrets.CREDENTIALS_FILE }}
-          overwrite: 'false' # Optional for upload actiondownload action
-          encoded: "true"
+

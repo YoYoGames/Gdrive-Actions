@@ -11,24 +11,23 @@ inputs:
   name:
     description: 'Name of the file on Google Drive'
     required: false
-  foler_id:
+  folder_id:
     description: 'ID of the file on Google Drive (for download action)'
     required: false
   drive_id:
     description: 'ID of the folder on Google Drive to upload the file to (for upload action)'
-    required: false
+    required: true
   credentials_file:
     description: 'Path to the credentials file (Base64 encoded Google service account credentials)'
-    required: true
-  mime_type:
-    description: 'MIME type of the file (e.g., application/zip)'
     required: true
   overwrite:
     description: 'Boolean indicating whether to overwrite existing files (for upload action)'
     required: false
-  output_dir:
-    description: 'Directory to save the downloaded file (for download action)'
-    required: false
+    default: 'false'
+  encoded:
+    description: 'Boolean indicating whether the filename is encoded (for download action)'
+    required: true
+    default: 'true'
 outputs:
   download_path:
     description: 'Path to the downloaded file (for download action)'
