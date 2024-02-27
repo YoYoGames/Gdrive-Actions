@@ -39,7 +39,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                 file_metadata = {'name': name, 'parents': [drive_id]}
                 media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
-            # Perform the upload
+                # Perform the upload
                 response = service.files().create(
                     body=file_metadata,
                     media_body=media,
@@ -47,7 +47,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                     fields='id'
                 ).execute()
 
-            # Log the upload completion
+                # Log the upload completion
                 debug(f"Upload completed. File ID: {response.get('id')}")
 
             except Exception as e:
@@ -63,7 +63,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                     status, done = downloader.next_chunk()
                     print(f'Download {int(status.progress() * 100)}.')
 
-            # Save the downloaded file to a local file
+                # Save the downloaded file to a local file
                 download_path = filename  # Specify the path where you want to save the file
                 with open(download_path, 'wb') as f:
                     f.write(file.getvalue())
