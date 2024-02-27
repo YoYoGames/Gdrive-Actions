@@ -11,6 +11,12 @@ from google.auth.transport.requests import Request as AuthRequest
 import socket
 import io
 
+def error(message):
+    logging.error(message)
+
+def debug(message):
+    logging.debug(message)
+
 def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
     # Ensure that the credentials file exists
     if not os.path.isfile(credentials_file):
