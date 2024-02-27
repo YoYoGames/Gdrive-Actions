@@ -17,18 +17,18 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
         error(f"Credentials file '{credentials_file}' not found.")
         return
 
-    # Read the base64-encoded credentials from the file
-    with open(credentials_file, 'r') as file:
-        credentials_base64 = file.read()
-
-    try:
-        # Decode the base64 string
-        credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
-
-        # Parse the decoded JSON string to obtain the credentials
-        credentials = json.loads(credentials_json)
-    except Exception as e:
-        error(f"Error decoding/parsing credentials: {e}")
+    # Read the base64-encoded credentials from the file if encoded is 'true'
+    if encoded.lower() == 'true':
+        try:
+            with open(credentials_file, 'r') as file:
+                credentials_base64 = file.read()
+                credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+                credentials = json.loads(credentials_json)
+        except Exception as e:
+            error(f"Error decoding/parsing credentials: {e}")
+            return
+    else:
+        error("Credentials are not encoded in base64.")
         return
 
     # Fetching a JWT config with credentials and the right scope
@@ -66,28 +66,22 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
              
     elif action == 'download':
         try:
-        # create drive api client
-            service = build('drive', 'v3', credentials=creds)
-
-            drive_id = folder_id
-
-        # pylint: disable=maybe-no-member
             request = service.files().get_media(fileId=folder_id)
             file = io.BytesIO()
             downloader = MediaIoBaseDownload(file, request)
             done = False
             while done is False:
                 status, done = downloader.next_chunk()
-                print(F'Download {int(status.progress() * 100)}.')
+                print(f'Download {int(status.progress() * 100)}.')
 
-        # Save the downloaded file to a local file
+            # Save the downloaded file to a local file
             download_path = filename  # Specify the path where you want to save the file
             with open(download_path, 'wb') as f:
                 f.write(file.getvalue())
-            print(F'Download completed. File saved to {download_path}')
+            print(f'Download completed. File saved to {download_path}')
 
         except HttpError as error:
-            print(F'An error occurred: {error}')
+            print(f'An error occurred: {error}')
 
 def error(message):
     logging.error(message)
@@ -109,10 +103,10 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, help='Name of the file on Google Drive')
     parser.add_argument('--drive_id', type=str, help='ID of the folder on Google Drive to upload the file to')
     parser.add_argument('--folder_id', type=str, help='ID of the file on Gdrive to download (for download action)')
-    parser.add_argument('--credentials_file', type=str, help='Base64 encoded Google service account credentials')
+    parser.add_argument('--credentials_file', type=str, help='Path to the file containing base64 encoded Google service account credentials')
     parser.add_argument('--encoded', type=str, help='Boolean indicating whether credentials are base64 encoded', default='true')
     parser.add_argument('--overwrite', type=str, help='Boolean indicating whether to overwrite existing files', default='false')
 
     args = parser.parse_args()
 
-    main(args.action, args.filename, args.name, args.folder_id, args.drive_id, args.credentials_file, args.encoded, args.overwrite)
+    main(args.action, args.filename, args.name, args.drive_id, args.folder_id, args.credentials_file, args.encoded, args.overwrite)
