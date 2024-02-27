@@ -11,7 +11,7 @@ from google.auth.transport.requests import Request as AuthRequest
 import socket
 import io
 
-def main(action, filename, name, drive_id, folder_id, credentials_file, encoded_str, overwrite_str, mime_type):
+def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
     # Ensure that the credentials file exists
     if not os.path.isfile(credentials_file):
         error(f"Credentials file '{credentials_file}' not found.")
@@ -48,7 +48,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded_
     if action == 'upload':
         try:
             file_metadata = {'name': name, 'parents': [drive_id]}
-            media = MediaFileUpload(filename, mimetype=mime_type)
+            media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
             # Perform the upload
             response = service.files().create(
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     parser.add_argument('--credentials_file', type=str, help='Base64 encoded Google service account credentials')
     parser.add_argument('--encoded', type=str, help='Boolean indicating whether credentials are base64 encoded', default='true')
     parser.add_argument('--overwrite', type=str, help='Boolean indicating whether to overwrite existing files', default='false')
-    parser.add_argument('--mime_type', type=str, help='MIME type of the file (e.g., application/zip)', default='application/zip')
+
     args = parser.parse_args()
 
-    main(args.action, args.filename, args.name, args.folder_id, args.drive_id, args.credentials_file, args.encoded, args.overwrite, args.mime_type)
+    main(args.action, args.filename, args.name, args.folder_id, args.drive_id, args.credentials_file, args.encoded, args.overwrite)

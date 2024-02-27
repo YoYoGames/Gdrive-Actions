@@ -25,7 +25,7 @@ jobs:
         run: pip install -r requirements.txt
       
       - name: Run action
-        uses: ./.github/actions/Gdrive-Upload-Download-Actions # Use the action in the current repository
+        uses: YoYoGames/Gdrive-Actions@main # Use the action in the current repository
         with:
           action: 'download' 
           filename: "RoboHelpTool.2023.0.1.zip"
