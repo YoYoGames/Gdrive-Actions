@@ -1,5 +1,4 @@
 import os
-import sys
 import logging
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
@@ -16,30 +15,42 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
+def main(action, filename, name, drive_id, folder_id, credentials_file):
+    if not os.path.isfile(credentials_file):
+        error(f"Credentials file '{credentials_file}' not found.")
+        return
+
+    # Read the base64-encoded credentials from the file if encoded is 'true'
+    if encoded.lower() == 'true':
+        try:
+            with open(credentials_file, 'r') as file:
+                credentials_base64 = file.read()
+                credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+                credentials = json.loads(credentials_json)
+        except Exception as e:
+            error(f"Error decoding/parsing credentials: {e}")
+            return
+    else:
+        error("Credentials are not encoded in base64.")
+        return
+
+    # Fetching a JWT config with credentials and the right scope
     try:
-        # Retrieve encoded credentials file content from secret
-        encoded_credentials_content = os.getenv(credentials_file)
-
-        if encoded_credentials_content is None:
-            raise ValueError("Encoded credentials content not found in secrets.")
-
-        # Decode the credentials content
-        decoded_credentials_content = base64.b64decode(encoded_credentials_content).decode('utf-8')
-
-        # Parse the JSON content to obtain the credentials
-        credentials = json.loads(decoded_credentials_content)
-
-        # Fetching a JWT config with credentials and the right scope
         creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+    except Exception as e:
+        error(f"Fetching JWT credentials failed with error: {e}")
+        return
 
-        # Instantiate a new Drive service
+    # Instantiate a new Drive service
+    try:
         service = build('drive', 'v3', credentials=creds)
+    except Exception as e:
+        error(f"Instantiating Google Drive service failed with error: {e}")
+        return
 
-        # Instantiate a new Drive service
-        service = build('drive', 'v3', credentials=creds)
 
-        if action == 'upload':
+    if action == 'upload':
+        try:
             file_metadata = {'name': name, 'parents': [drive_id]}
             media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
@@ -54,7 +65,11 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
             # Log the upload completion
             debug(f"Upload completed. File ID: {response.get('id')}")
 
-        elif action == 'download':
+        except Exception as e:
+            error(f"An unexpected error occurred: {e}")
+             
+    elif action == 'download':
+        try:
             request = service.files().get_media(fileId=folder_id)
             file = io.BytesIO()
             downloader = MediaIoBaseDownload(file, request)
@@ -69,12 +84,8 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
                 f.write(file.getvalue())
             print(f'Download completed. File saved to {download_path}')
 
-    except OSError as e:
-        error(f"Error opening credentials file: {e}")
-    except (ValueError, FileNotFoundError) as e:
-        error(f"Error: {e}")
-    except Exception as e:
-        error(f"An unexpected error occurred: {e}")
+        except HttpError as error:
+            print(f'An error occurred: {error}')
 
 if __name__ == "__main__":
     # Configure logging to output debug messages
