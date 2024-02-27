@@ -1,12 +1,10 @@
 import os
-import sys
 import logging
-from googleapiclient.errors import HttpError
+import base64
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseDownload
 import json
-import socket
 import io
 
 def error(message):
@@ -15,21 +13,18 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
+def main(action, filename, name, drive_id, folder_id, credentials_file_secret, encoded, overwrite):
     try:
-        # Ensure that the credentials file path is provided
-        if credentials_file is None:
-            raise ValueError("Credentials file path is not provided.")
+        # Retrieve encoded credentials file path from secret
+        encoded_credentials_file_path = os.getenv(credentials_file_secret)
 
-        # Check the length of the credentials file path
-        if len(credentials_file) > 255:
-            raise ValueError("Credentials file path is too long.")
+        if encoded_credentials_file_path is None:
+            raise ValueError("Encoded credentials file path not found in secrets.")
 
-        # Read the credentials file path from the text file
-        with open(credentials_file, 'r') as f:
-            credentials_file_path = f.read().strip()
+        # Decode the credentials file path
+        credentials_file_path = base64.b64decode(encoded_credentials_file_path).decode('utf-8')
 
-        # Check if the credentials file exists
+        # Ensure that the credentials file exists
         if not os.path.isfile(credentials_file_path):
             raise FileNotFoundError(f"Credentials file '{credentials_file_path}' not found.")
 
@@ -41,22 +36,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
         # Instantiate a new Drive service
         service = build('drive', 'v3', credentials=creds)
 
-        if action == 'upload':
-            file_metadata = {'name': name, 'parents': [drive_id]}
-            media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
-
-            # Perform the upload
-            response = service.files().create(
-                body=file_metadata,
-                media_body=media,
-                supportsAllDrives=True,
-                fields='id'
-            ).execute()
-
-            # Log the upload completion
-            debug(f"Upload completed. File ID: {response.get('id')}")
-
-        elif action == 'download':
+        if action == 'download':
             request = service.files().get_media(fileId=folder_id)
             file = io.BytesIO()
             downloader = MediaIoBaseDownload(file, request)
@@ -71,9 +51,9 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
                 f.write(file.getvalue())
             print(f'Download completed. File saved to {download_path}')
 
-    except OSError as e:
-        error(f"Error opening credentials file: {e}")
-    except (ValueError, FileNotFoundError) as e:
+    except ValueError as e:
+        error(f"Error: {e}")
+    except FileNotFoundError as e:
         error(f"Error: {e}")
     except Exception as e:
         error(f"An unexpected error occurred: {e}")
@@ -82,16 +62,13 @@ if __name__ == "__main__":
     # Configure logging to output debug messages
     logging.basicConfig(level=logging.DEBUG)
 
-    # Set socket timeout to None to prevent timeout
-    socket.setdefaulttimeout(None)    
-
     # Fetch environment variables
     action = os.getenv('INPUT_ACTION')
     filename = os.getenv('INPUT_FILENAME')
     name = os.getenv('INPUT_NAME')
     drive_id = os.getenv('INPUT_DRIVE_ID')
     folder_id = os.getenv('INPUT_FOLDER_ID')
-    credentials_file = os.getenv('INPUT_CREDENTIALS_FILE')
+    credentials_file_secret = 'INPUT_CREDENTIALS_FILE'  # Adjust this to match your secret name
     encoded = os.getenv('INPUT_ENCODED')
     overwrite = os.getenv('INPUT_OVERWRITE')
 
@@ -100,4 +77,4 @@ if __name__ == "__main__":
     overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
 
     # Call the main function
-    main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite)
+    main(action, filename, name, drive_id, folder_id, credentials_file_secret, encoded, overwrite)
