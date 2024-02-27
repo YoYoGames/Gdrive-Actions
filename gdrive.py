@@ -21,6 +21,10 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
         if credentials_file is None:
             raise ValueError("Credentials file path is not provided.")
 
+        # Check the length of the credentials file path
+        if len(credentials_file) > 255:
+            raise ValueError("Credentials file path is too long.")
+
         # Read the credentials file path from the text file
         with open(credentials_file, 'r') as f:
             credentials_file_path = f.read().strip()
