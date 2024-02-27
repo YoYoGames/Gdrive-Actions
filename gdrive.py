@@ -17,7 +17,7 @@ def debug(message):
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
         # Retrieve encoded credentials content from secret
-        encoded_credentials_content = os.environ(credentials_file)
+        encoded_credentials_content = os.environ[credentials_file]
 
         # if encoded_credentials_content is None:
         #     raise ValueError("Encoded credentials content not found in secrets.")
@@ -80,12 +80,12 @@ if __name__ == "__main__":
     socket.setdefaulttimeout(None)    
 
     # Fetch environment variables
-    action = os.environ('INPUT_ACTION')
-    filename = os.environ('INPUT_FILENAME')
-    name = os.environ('INPUT_NAME')
-    drive_id = os.environ('INPUT_DRIVE_ID')
-    folder_id = os.environ('INPUT_FOLDER_ID')
-    credentials_file = os.environ('INPUT_CREDENTIALS_FILE')
+    action = os.environ["INPUT_ACTION"]
+    filename = os.environ["INPUT_FILENAME"]
+    name = os.environ["INPUT_NAME"]
+    drive_id = os.environ["INPUT_DRIVE_ID"]
+    folder_id = os.environ["INPUT_FOLDER_ID"]
+    credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
     # encoded = os.getenv('INPUT_ENCODED')
     # overwrite = os.getenv('INPUT_OVERWRITE')
 
