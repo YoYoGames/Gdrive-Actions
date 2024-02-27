@@ -16,7 +16,6 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
-    try:
         # Retrieve encoded credentials content from secret
         encoded_credentials_content = os.getenv(credentials_file)
 
@@ -72,8 +71,6 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
             except HttpError as error:
                 print(f'An error occurred: {error}')
         
-    except Exception as e:
-        error(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     # Configure logging to output debug messages
