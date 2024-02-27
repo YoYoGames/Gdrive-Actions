@@ -97,16 +97,14 @@ if __name__ == "__main__":
 
     # Set socket timeout to None to prevent timeout
     socket.setdefaulttimeout(None)    
-    parser = argparse.ArgumentParser(description='Upload or Download file from Google Drive')
-    parser.add_argument('--action', choices=['upload', 'download'], help='Action to perform: upload or download')
-    parser.add_argument('--filename', type=str, help='Path to the file to upload')
-    parser.add_argument('--name', type=str, help='Name of the file on Google Drive')
-    parser.add_argument('--drive_id', type=str, help='ID of the folder on Google Drive to upload the file to')
-    parser.add_argument('--folder_id', type=str, help='ID of the file on Gdrive to download (for download action)')
-    parser.add_argument('--credentials_file', type=str, help='Path to the file containing base64 encoded Google service account credentials')
-    parser.add_argument('--encoded', type=str, help='Boolean indicating whether credentials are base64 encoded', default='true')
-    parser.add_argument('--overwrite', type=str, help='Boolean indicating whether to overwrite existing files', default='false')
 
-    args = parser.parse_args()
+    action = os.getenv('INPUT_ACTION')
+    filename = os.getenv('INPUT_FILENAME')
+    name = os.getenv('INPUT_NAME')
+    drive_id = os.getenv('INPUT_DRIVE_ID')
+    folder_id = os.getenv('INPUT_FOLDER_ID')
+    credentials_file = os.getenv('INPUT_CREDENTIALS_FILE')
+    encoded = os.getenv('INPUT_ENCODED')
+    overwrite = os.getenv('INPUT_OVERWRITE')
 
-    main(args.action, args.filename, args.name, args.drive_id, args.folder_id, args.credentials_file, args.encoded, args.overwrite)
+    main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite)

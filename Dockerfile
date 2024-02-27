@@ -13,4 +13,4 @@ FROM gcr.io/distroless/python3-debian10
 COPY --from=builder /app /app
 WORKDIR /app
 ENV PYTHONPATH /app
-CMD ["/app/gdrive_actions.py"]
+CMD ["/app/gdrive.py"]
