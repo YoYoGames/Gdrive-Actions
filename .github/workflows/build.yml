@@ -21,7 +21,7 @@ jobs:
         with:
           action: 'upload' 
           filename: 'RoboHelpTool-2024.2.0.zip'
-          folder_id: ${{ secrets.RESOURCE_ID }} # If available
-          drive_id: '${{ secrets.FILE_ID }}' # If available
+          folder_id: ${{ secrets.FOLDER_ID }} # If available
+          drive_id: '${{ secrets.DRIVE_ID }}' # If available
           credentials_file: ${{ secrets.CREDENTIALS_FILE }}
 

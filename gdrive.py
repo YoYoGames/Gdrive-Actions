@@ -1,13 +1,11 @@
-import base64
 import os
+import sys
 import logging
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-import argparse
 import json
-from google.auth.transport.requests import Request as AuthRequest
 import socket
 import io
 
@@ -18,28 +16,29 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
-    # Ensure that the credentials file exists
-    if not os.path.isfile(credentials_file):
-        error(f"Credentials file '{credentials_file}' not found.")
+    # Ensure that the credentials file path is provided
+    if credentials_file is None:
+        error("Credentials file path is not provided.")
         return
 
-    # Read the base64-encoded credentials from the file if encoded is 'true'
-    if encoded.lower() == 'true':
-        try:
-            with open(credentials_file, 'r') as file:
-                credentials_base64 = file.read()
-                credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
-                credentials = json.loads(credentials_json)
-        except Exception as e:
-            error(f"Error decoding/parsing credentials: {e}")
-            return
-    else:
-        error("Credentials are not encoded in base64.")
+    # Read the credentials file path from the text file
+    try:
+        with open(credentials_file, 'r') as f:
+            credentials_file_path = f.read().strip()
+    except Exception as e:
+        error(f"Error reading credentials file path: {e}")
+        return
+
+    # Check if the credentials file exists
+    if not os.path.isfile(credentials_file_path):
+        error(f"Credentials file '{credentials_file_path}' not found.")
         return
 
     # Fetching a JWT config with credentials and the right scope
     try:
-        creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+        with open(credentials_file_path, 'r') as file:
+            credentials = json.load(file)
+            creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
     except Exception as e:
         error(f"Fetching JWT credentials failed with error: {e}")
         return
@@ -89,21 +88,14 @@ def main(action, filename, name, drive_id, folder_id, credentials_file, encoded,
         except HttpError as error:
             print(f'An error occurred: {error}')
 
-def error(message):
-    logging.error(message)
-
-def debug(message):
-    logging.debug(message)
-
-
 if __name__ == "__main__":
-
     # Configure logging to output debug messages
     logging.basicConfig(level=logging.DEBUG)
 
     # Set socket timeout to None to prevent timeout
     socket.setdefaulttimeout(None)    
 
+    # Fetch environment variables
     action = os.getenv('INPUT_ACTION')
     filename = os.getenv('INPUT_FILENAME')
     name = os.getenv('INPUT_NAME')
@@ -113,4 +105,14 @@ if __name__ == "__main__":
     encoded = os.getenv('INPUT_ENCODED')
     overwrite = os.getenv('INPUT_OVERWRITE')
 
+    # Perform type conversion where necessary
+    encoded = encoded.lower() == 'true' if encoded else True  # Convert to boolean
+    overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
+
+    # Ensure required variables are present
+    if None in (action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite):
+        print("Error: One or more required environment variables are missing.")
+        sys.exit(1)
+
+    # Call the main function
     main(action, filename, name, drive_id, folder_id, credentials_file, encoded, overwrite)
