@@ -27,11 +27,10 @@ jobs:
       - name: Run action
         uses: YoYoGames/Gdrive-Actions@main # Use the action in the current repository
         with:
-          action: 'download' 
+          action: 'upload' 
           filename: "RoboHelpTool.2023.0.1.zip"
           folder_id: ${{ secrets.RESOURCE_ID }} # If available
           drive_id: ${{ secrets.FILE_ID }} # If available
           credentials_file: ${{ secrets.CREDENTIALS_FILE }}
-          mime_type: 'application/zip' # Adjust MIME type as needed
           overwrite: 'false' # Optional for upload actiondownload action
           encoded: "true"

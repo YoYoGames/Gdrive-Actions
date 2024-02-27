@@ -33,5 +33,5 @@ outputs:
   download_path:
     description: 'Path to the downloaded file (for download action)'
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: "docker"
+  image: "Dockerfile"
