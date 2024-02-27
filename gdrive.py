@@ -19,8 +19,8 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
         # Retrieve encoded credentials content from secret
         encoded_credentials_content = os.getenv(credentials_file)
 
-        if encoded_credentials_content is None:
-            raise ValueError("Encoded credentials content not found in secrets.")
+        # if encoded_credentials_content is None:
+        #     raise ValueError("Encoded credentials content not found in secrets.")
 
         # Decode the credentials content
         credentials_base64 = encoded_credentials_content.encode('utf-8')
