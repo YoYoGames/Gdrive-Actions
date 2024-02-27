@@ -15,7 +15,7 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file, encoded):
+def main(action, filename, name, drive_id, folder_id, credentials_file):
     try:
         # Retrieve encoded credentials content from secret
         encoded_credentials_content = os.getenv(credentials_file)
@@ -92,9 +92,9 @@ if __name__ == "__main__":
     # encoded = os.getenv('INPUT_ENCODED')
     overwrite = os.getenv('INPUT_OVERWRITE')
 
-    # Perform type conversion where necessary
-    encoded = encoded.lower() == 'true' if encoded else True  # Convert to boolean
-    overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
+    # # Perform type conversion where necessary
+    # encoded = encoded.lower() == 'true' if encoded else True  # Convert to boolean
+    # overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
 
     # Call the main function
-    main(action, filename, name, drive_id, folder_id, credentials_file, encoded)
+    main(action, filename, name, drive_id, folder_id, credentials_file)
