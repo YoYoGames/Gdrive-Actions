@@ -16,7 +16,6 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
-    try:
         if not os.path.isfile(credentials_file):
             error(f"Credentials file '{credentials_file}' not found.")
             return
@@ -32,18 +31,14 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
             credentials = json.loads(credentials_json)
 
     # Fetching a JWT config with credentials and the right scope
-        try:
+
             creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
-        except Exception as e:
-            error(f"Fetching JWT credentials failed with error: {e}")
-            return
+
 
     # Instantiate a new Drive service
-        try:
+   
             service = build('drive', 'v3', credentials=creds)
-        except Exception as e:
-            error(f"Instantiating Google Drive service failed with error: {e}")
-            return
+  
 
 
         # if credentials_file is None:
@@ -64,13 +59,9 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
 
         #         # Instantiate a new Drive service
         # service = build('drive', 'v3', credentials=creds)
-        pass
-    
-    except Exception as e:
-        error(f"An unexpected error occurred: {e}")    
 
-    if action == 'upload':
-        try:
+        if action == 'upload':
+            try:
                 file_metadata = {'name': name, 'parents': [drive_id]}
                 media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
@@ -85,10 +76,10 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                 # Log the upload completion
                 print(f"Upload completed. File ID: {response.get('id')}")
 
-        except Exception as e:
+            except Exception as e:
                 error(f"An unexpected error occurred: {e}")
              
-    elif action == 'download':
+        elif action == 'download':
             try:
                 request = service.files().get_media(fileId=folder_id)
                 file = io.BytesIO()
