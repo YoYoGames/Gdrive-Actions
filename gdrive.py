@@ -15,23 +15,43 @@ def error(message):
 def debug(message):
     logging.debug(message)
 
-def main(action, filename, name, drive_id, folder_id, credentials_file):
+def main(action, filename, name, drive_id, folder_id):
         # Retrieve encoded credentials content from secret
-        encoded_credentials_content = credentials_file
+        encoded_credentials_content = 'credentials_file.txt'
 
+        # credentials = 'credentials_file.txt'
         # if encoded_credentials_content is None:
         #     raise ValueError("Encoded credentials content not found in secrets.")
 
-        # Decode the credentials content
+        # # Decode the credentials content
         credentials_base64 = encoded_credentials_content.encode('utf-8')
         credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
         credentials = json.loads(credentials_json)
 
-        # Fetching a JWT config with credentials and the right scope
+        # # Fetching a JWT config with credentials and the right scope
         creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
 
-        # Instantiate a new Drive service
+        # # # Instantiate a new Drive service
         service = build('drive', 'v3', credentials=creds)
+
+        # if credentials_file is None:
+        #     raise ValueError("Credentials file path is not provided.")
+
+        # # Read the credentials file path from the text file
+        # with open(credentials_file, 'r') as f:
+        #     credentials_file_path = f.read().strip()
+
+        # # Check if the credentials file exists
+        # if not os.path.isfile(credentials_file_path):
+        #     raise FileNotFoundError(f"Credentials file '{credentials_file_path}' not found.")
+
+        # # Fetching a JWT config with credentials and the right scope
+        # with open(credentials_file_path, 'r') as file:
+        #     credentials = json.load(file)
+        #     creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+
+        #         # Instantiate a new Drive service
+        # service = build('drive', 'v3', credentials=creds)
 
         if action == 'upload':
             try:
