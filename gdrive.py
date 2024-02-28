@@ -21,10 +21,10 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
 
     # Read the base64-encoded credentials from the file
         with open(credentials_file, 'r') as file:
-            credentials_base64 = file.read()
+            credentials_content = file.read()
 
         # Decode the base64 string
-            credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+            credentials_json = base64.b64decode(credentials_content).decode('utf-8')
 
         # Parse the decoded JSON string to obtain the credentials
             credentials = json.loads(credentials_json)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     name = os.environ["INPUT_NAME"]
     drive_id = os.environ["INPUT_DRIVE_ID"]
     folder_id = os.environ["INPUT_FOLDER_ID"]
-    credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
-
+    credentials_file = "credential_file.txt"
+    credentials_content = os.getenv("INPUT_CREDENTIALS_FILE")
     # Call the main function
     main(action, filename, name, drive_id, folder_id, credentials_file)
