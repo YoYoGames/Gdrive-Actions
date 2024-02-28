@@ -32,8 +32,8 @@ outputs:
   download_path:
     description: 'Path to the downloaded file (for download action)'
 runs:
-  using: "composite"
-  image: "gdrive.py"
+  using: "docker"
+  image: "Dockerfile"
 
 # runs:
 #   using: 'composite'
