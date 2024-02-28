@@ -105,7 +105,7 @@ if __name__ == "__main__":
     name = os.environ["INPUT_NAME"]
     drive_id = os.environ["INPUT_DRIVE_ID"]
     folder_id = os.environ["INPUT_FOLDER_ID"]
-    credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
+    # credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
     # encoded = os.getenv('INPUT_ENCODED')
     # overwrite = os.getenv('INPUT_OVERWRITE')
 
