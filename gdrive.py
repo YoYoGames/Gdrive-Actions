@@ -9,40 +9,39 @@ import socket
 import io
 import base64
 
-def error(message):
-    logging.error(message)
-
-def debug(message):
-    logging.debug(message)
-
-def main(action, filename, name, drive_id, folder_id):
-    credentials_file = "credential_file.txt"
-        # Retrieve encoded credentials content from secret
-    if not os.path.isfile(os.getenv(credentials_file)):
+def main(action, filename, name, drive_id, folder_id, credentials_file):
+    if not os.path.isfile(credentials_file):
         error(f"Credentials file '{credentials_file}' not found.")
         return
 
-# Read the credentials from the file
-    try:
-        with open(credentials_file, 'r') as file:
-            credentials_text = file.read().strip()  # Strip any leading/trailing whitespace
-    except Exception as e:
-        error(f"Error reading credentials file: {e}")
-        return
+    # Read the base64-encoded credentials from the file
+    with open(credentials_file, 'r') as file:
+        credentials_base64 = file.read()
 
-# Decode the base64-encoded credentials
     try:
-        credentials_json = base64.b64decode(credentials_text).decode('utf-8')
+        # Decode the base64 string
+        credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+
+        # Parse the decoded JSON string to obtain the credentials
         credentials = json.loads(credentials_json)
     except Exception as e:
         error(f"Error decoding/parsing credentials: {e}")
         return
 
-        # # Fetching a JWT config with credentials and the right scope
-    creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+    # Fetching a JWT config with credentials and the right scope
+    try:
+        creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+    except Exception as e:
+        error(f"Fetching JWT credentials failed with error: {e}")
+        return
 
-        # # # Instantiate a new Drive service
-    service = build('drive', 'v3', credentials=creds)
+    # Instantiate a new Drive service
+    try:
+        service = build('drive', 'v3', credentials=creds)
+    except Exception as e:
+        error(f"Instantiating Google Drive service failed with error: {e}")
+        return
+
 
         # if credentials_file is None:
         #     raise ValueError("Credentials file path is not provided.")
@@ -115,13 +114,7 @@ if __name__ == "__main__":
     name = os.environ["INPUT_NAME"]
     drive_id = os.environ["INPUT_DRIVE_ID"]
     folder_id = os.environ["INPUT_FOLDER_ID"]
-    # credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
-    # encoded = os.getenv('INPUT_ENCODED')
-    # overwrite = os.getenv('INPUT_OVERWRITE')
-
-    # # Perform type conversion where necessary
-    # encoded = encoded.lower() == 'true' if encoded else True  # Convert to boolean
-    # overwrite = overwrite.lower() == 'true' if overwrite else False  # Convert to boolean
+    credentials_file = os.environ["INPUT_CREDENTIALS_FILE"]
 
     # Call the main function
-    main(action, filename, name, drive_id, folder_id)
+    main(action, filename, name, drive_id, folder_id, credentials_file)
