@@ -52,6 +52,7 @@ runs:
           echo "INPUT_NAME=${{ inputs.name }}" >> $GITHUB_ENV
           echo "INPUT_DRIVE_ID=${{ inputs.drive_id }}" >> $GITHUB_ENV
           echo "INPUT_FOLDER_ID=${{ inputs.folder_id }}" >> $GITHUB_ENV
+      shell: bash
     - name: decode credential file
       run: | 
           $credentials_file_base64 = $env.CREDENTIALS_FILE
