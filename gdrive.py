@@ -17,18 +17,8 @@ def debug(message):
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
 
-        # Retrieve credentials JSON from the secret
-        credentials_json = os.getenv(credentials_file)
-
-        if credentials_json is None:
-            raise ValueError("Credentials JSON not found in secrets.")
-
-        # Write credentials to a file
-        credentials_file_path = "creds.json"
-        with open(credentials_file_path, 'w') as f:
-            f.write(credentials_json)
-        credentials_json = file.read()
-        credentials = json.loads(credentials_json)
+        with open(credentials_file, 'r') as file:
+            credentials = json.load(file)
 
         # Fetching a JWT config with credentials and the right scope
         creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
