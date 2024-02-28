@@ -58,7 +58,7 @@ runs:
     #       $credentials_file_base64 = $env.CREDENTIALS_FILE
     #       $credentials_file = "credential_file.txt"
     #       $credential_file_base64 | Out-File -FilePath $credentials_file
-      shell: pwsh      
+      # shell: pwsh      
     - name: Run python script
       run: python gdrive.py
       shell: cmd
