@@ -17,4 +17,4 @@ steps:
     folder_id: '#######'
     drive_id: '########'
     actions: 'upload' or 'download'
-     credentials_file: ${{ secrets.CREDENTIALS_FILE }} #//credentials encoded string
+    credentials_file: ${{ secrets.CREDENTIALS_FILE }} #//credentials encoded string
