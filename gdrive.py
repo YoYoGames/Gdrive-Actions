@@ -16,23 +16,33 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id):
+    credentials_file = "credential_file.txt"
         # Retrieve encoded credentials content from secret
-        encoded_credentials_content = 'credential_file.txt'
+    if not os.path.isfile(os.getenv(credentials_file)):
+        error(f"Credentials file '{credentials_file}' not found.")
+        return
 
-        # credentials = 'credentials_file.txt'
-        # if encoded_credentials_content is None:
-        #     raise ValueError("Encoded credentials content not found in secrets.")
+# Read the credentials from the file
+    try:
+        with open(credentials_file, 'r') as file:
+            credentials_text = file.read().strip()  # Strip any leading/trailing whitespace
+    except Exception as e:
+        error(f"Error reading credentials file: {e}")
+        return
 
-        # # Decode the credentials content
-        credentials_base64 = encoded_credentials_content.encode('utf-8')
-        credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+# Decode the base64-encoded credentials
+    try:
+        credentials_json = base64.b64decode(credentials_text).decode('utf-8')
         credentials = json.loads(credentials_json)
+    except Exception as e:
+        error(f"Error decoding/parsing credentials: {e}")
+        return
 
         # # Fetching a JWT config with credentials and the right scope
-        creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+    creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
 
         # # # Instantiate a new Drive service
-        service = build('drive', 'v3', credentials=creds)
+    service = build('drive', 'v3', credentials=creds)
 
         # if credentials_file is None:
         #     raise ValueError("Credentials file path is not provided.")
@@ -53,8 +63,8 @@ def main(action, filename, name, drive_id, folder_id):
         #         # Instantiate a new Drive service
         # service = build('drive', 'v3', credentials=creds)
 
-        if action == 'upload':
-            try:
+    if action == 'upload':
+        try:
                 file_metadata = {'name': name, 'parents': [drive_id]}
                 media = MediaFileUpload(filename, mimetype='application/zip', resumable=True)
 
@@ -69,11 +79,11 @@ def main(action, filename, name, drive_id, folder_id):
                 # Log the upload completion
                 debug(f"Upload completed. File ID: {response.get('id')}")
 
-            except Exception as e:
+        except Exception as e:
                 error(f"An unexpected error occurred: {e}")
              
-        elif action == 'download':
-            try:
+    elif action == 'download':
+        try:
                 request = service.files().get_media(fileId=folder_id)
                 file = io.BytesIO()
                 downloader = MediaIoBaseDownload(file, request)
@@ -88,7 +98,7 @@ def main(action, filename, name, drive_id, folder_id):
                     f.write(file.getvalue())
                 print(f'Download completed. File saved to {download_path}')
 
-            except HttpError as error:
+        except HttpError as error:
                 print(f'An error occurred: {error}')
         
 
