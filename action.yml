@@ -56,7 +56,7 @@ runs:
     - name: decode credential file
       run: | 
           $credentials_file_base64 = $env.CREDENTIALS_FILE
-          $credentials_file = credential_file.txt
+          $credentials_file = "credential_file.txt"
           $credential_file_base64 | Out-File -FilePath $credentials_file
       shell: pwsh      
     - name: Run python script
