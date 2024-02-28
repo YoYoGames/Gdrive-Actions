@@ -54,12 +54,13 @@ runs:
           echo "INPUT_FOLDER_ID=${{ inputs.folder_id }}" >> $GITHUB_ENV
           echo "INPUT_CREDENTIALS_FILE=${{ inputs.credentials_file }}" >> $GITHUB_ENV
       shell: bash
-    # - name: decode credential file
-    #   run: | 
-    #       $credentials_file_base64 = $env.CREDENTIALS_FILE
-    #       $credentials_file = "credential_file.txt"
-    #       $credential_file_base64 | Out-File -FilePath $credentials_file
-      # shell: pwsh      
+    - name: decode credential file
+      run: | 
+          
+          $credentials_file_base64 = $env.CREDENTIALS_FILE
+          $credentials_file = "credential_file.txt"
+          $credential_file_base64 | Out-File -FilePath "$credentials_file"
+      shell: pwsh      
     - name: Run python script
       run: python gdrive.py
       shell: cmd

@@ -76,7 +76,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                 ).execute()
 
                 # Log the upload completion
-                debug(f"Upload completed. File ID: {response.get('id')}")
+                print(f"Upload completed. File ID: {response.get('id')}")
 
         except Exception as e:
                 error(f"An unexpected error occurred: {e}")
