@@ -34,4 +34,10 @@ outputs:
 runs:
   using: "docker"
   image: "Dockerfile"
-
+    args:
+    - ${{ inputs.credentials_file }}
+    - ${{ inputs.drive_id }}
+    - ${{ inputs.folder_id }}
+    - ${{ inputs.name }}
+    - ${{ inputs.filename }}
+    - ${{ inputs.action }}
