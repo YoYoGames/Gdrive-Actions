@@ -25,7 +25,7 @@ jobs:
           folder_id: ${{ secrets.FOLDER_ID }} # If available
           drive_id: '${{ secrets.DRIVE_ID }}' # If available
           name: 'RoboHelpTool-2024.2.0.zip'
-          credentials_file: 'credential_file.txt'
+          credentials_file: ${{ env.CREDENTIALS_FILE }}
       - name: Download zipfile
         uses: actions/upload-artifact@v4
         with:

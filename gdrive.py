@@ -9,38 +9,39 @@ import socket
 import io
 import base64
 
+
+def error(message):
+    logging.error(message)
+
 def main(action, filename, name, drive_id, folder_id, credentials_file):
-    if not os.path.isfile(credentials_file):
-        error(f"Credentials file '{credentials_file}' not found.")
-        return
+    try:
+        if not os.path.isfile(credentials_file):
+            error(f"Credentials file '{credentials_file}' not found.")
+            return
 
     # Read the base64-encoded credentials from the file
-    with open(credentials_file, 'r') as file:
-        credentials_base64 = file.read()
+        with open(credentials_file, 'r') as file:
+            credentials_base64 = file.read()
 
-    try:
         # Decode the base64 string
-        credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+            credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
 
         # Parse the decoded JSON string to obtain the credentials
-        credentials = json.loads(credentials_json)
-    except Exception as e:
-        error(f"Error decoding/parsing credentials: {e}")
-        return
+            credentials = json.loads(credentials_json)
 
     # Fetching a JWT config with credentials and the right scope
-    try:
-        creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
-    except Exception as e:
-        error(f"Fetching JWT credentials failed with error: {e}")
-        return
+        try:
+            creds = service_account.Credentials.from_service_account_info(credentials, scopes=["https://www.googleapis.com/auth/drive.file"])
+        except Exception as e:
+            error(f"Fetching JWT credentials failed with error: {e}")
+            return
 
     # Instantiate a new Drive service
-    try:
-        service = build('drive', 'v3', credentials=creds)
-    except Exception as e:
-        error(f"Instantiating Google Drive service failed with error: {e}")
-        return
+        try:
+            service = build('drive', 'v3', credentials=creds)
+        except Exception as e:
+            error(f"Instantiating Google Drive service failed with error: {e}")
+            return
 
 
         # if credentials_file is None:
@@ -61,6 +62,9 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
 
         #         # Instantiate a new Drive service
         # service = build('drive', 'v3', credentials=creds)
+    
+    except Exception as e:
+        error(f"An unexpected error occurred: {e}")    
 
     if action == 'upload':
         try:
@@ -82,7 +86,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                 error(f"An unexpected error occurred: {e}")
              
     elif action == 'download':
-        try:
+            try:
                 request = service.files().get_media(fileId=folder_id)
                 file = io.BytesIO()
                 downloader = MediaIoBaseDownload(file, request)
@@ -97,7 +101,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
                     f.write(file.getvalue())
                 print(f'Download completed. File saved to {download_path}')
 
-        except HttpError as error:
+            except HttpError as error:
                 print(f'An error occurred: {error}')
         
 

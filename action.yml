@@ -56,11 +56,10 @@ runs:
       shell: bash
     - name: decode credential file
       run: | 
-          
-          $credentials_file_base64 = $env.CREDENTIALS_FILE
-          $credentials_file = "credential_file.txt"
-          $credential_file_base64 | Out-File -FilePath "$credentials_file"
-      shell: pwsh      
+          credentials_content="$INPUT_CREDENTIALS_FILE"
+          credentials_file="credential_file.txt"
+          echo "$credentials_content" > "$credentials_file"
+      shell: bash     
     - name: Run python script
       run: python gdrive.py
       shell: cmd
