@@ -9,9 +9,11 @@ import socket
 import io
 import base64
 
-
 def error(message):
     logging.error(message)
+
+def debug(message):
+    logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
     try:
@@ -62,6 +64,7 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
 
         #         # Instantiate a new Drive service
         # service = build('drive', 'v3', credentials=creds)
+        pass
     
     except Exception as e:
         error(f"An unexpected error occurred: {e}")    
