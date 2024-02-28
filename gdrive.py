@@ -16,15 +16,15 @@ def debug(message):
     logging.debug(message)
 
 def main(action, filename, name, drive_id, folder_id, credentials_file):
-    try:
-        # Retrieve encoded credentials content from secret
-        encoded_credentials_content = os.getenv(credentials_file)
 
-        if encoded_credentials_content is None:
+        # Retrieve encoded credentials content from secret
+        credentials_content = credentials_file
+
+        if credentials_content is None:
             raise ValueError("Encoded credentials content not found in secrets.")
 
         # Decode the credentials content
-        credentials_base64 = encoded_credentials_content.encode('utf-8')
+        credentials_base64 = credentials_content.encode('utf-8')
         credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
 
         # Check if credentials_json is empty or not
@@ -42,12 +42,6 @@ def main(action, filename, name, drive_id, folder_id, credentials_file):
 
         # Rest of your code goes here...
         
-    except ValueError as ve:
-        error(f"ValueError: {ve}")
-    except json.decoder.JSONDecodeError as jde:
-        error(f"JSONDecodeError: {jde}")
-    except Exception as e:
-        error(f"An unexpected error occurred: {e}")
   
         # if credentials_file is None:
         #     raise ValueError("Credentials file path is not provided.")
