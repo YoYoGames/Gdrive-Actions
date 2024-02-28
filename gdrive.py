@@ -17,7 +17,7 @@ def debug(message):
 
 def main(action, filename, name, drive_id, folder_id):
         # Retrieve encoded credentials content from secret
-        encoded_credentials_content = 'credentials_file.txt'
+        encoded_credentials_content = 'credential_file.txt'
 
         # credentials = 'credentials_file.txt'
         # if encoded_credentials_content is None:
