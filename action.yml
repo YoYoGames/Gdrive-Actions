@@ -1,6 +1,6 @@
-name: 'Google Drive File Action'
+name: 'Google Drive File Upload or Download Action'
 description: 'Upload or download files from Google Drive'
-author: 'Your Name'
+author: 'YoYoGames'
 inputs:
   action:
     description: 'Action to perform: upload or download'
