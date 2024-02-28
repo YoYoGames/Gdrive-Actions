@@ -1,6 +1,4 @@
-# Python Container Action Template
-[![Actions Status](https://github.com/jacobtomlinson/python-container-action/workflows/Lint/badge.svg)](https://github.com/jacobtomlinson/python-container-action/actions)
-[![Actions Status](https://github.com/jacobtomlinson/python-container-action/workflows/Integration%20Test/badge.svg)](https://github.com/jacobtomlinson/python-container-action/actions)
+# Gdrive Upload/Download with or without Container Action
 
 This action helps in downloading or uploading files from Gdrive
 
