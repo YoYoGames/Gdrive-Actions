@@ -19,7 +19,7 @@ jobs:
       - name: Run action
         uses: YoYoGames/Gdrive-Actions@main # Use the action in the current repository
         with:
-          action: 'downloadload' 
+          action: 'download' 
           filename: 'RoboHelpTool-2024.2.0.zip'
           folder_id: ${{ secrets.FOLDER_ID }} # If available
           drive_id: '${{ secrets.DRIVE_ID }}' # If available
